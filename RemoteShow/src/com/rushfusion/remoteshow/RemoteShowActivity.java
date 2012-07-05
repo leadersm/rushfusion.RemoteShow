@@ -17,8 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.android.rushfusion.http.HttpServer;
-
 public class RemoteShowActivity extends ListActivity {
 
 	
@@ -46,17 +44,15 @@ public class RemoteShowActivity extends ListActivity {
 	public List<HashMap<String, String>> obtainVideos() {
 		List<HashMap<String, String>> files = new ArrayList<HashMap<String, String>>();
 		ContentResolver contentResolver = getContentResolver();
-		String[] paths = new String[] { MediaStore.Video.Media.DATA,
-				MediaStore.Video.Media.TITLE };
+		String[] video = new String[] { MediaStore.Video.Media.DATA,
+				                        MediaStore.Video.Media.TITLE };
 		c = contentResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-				paths, null, null, MediaStore.Video.Media.DEFAULT_SORT_ORDER);
+								  video, null, null, MediaStore.Video.Media.DEFAULT_SORT_ORDER);
 		c.moveToFirst();
 		for (int i = 0; i < c.getCount(); i++) {
 			HashMap<String, String> file = new HashMap<String, String>();
-			String path = c.getString(c
-					.getColumnIndex(MediaStore.Video.Media.DATA));
-			String name = c.getString(c
-					.getColumnIndex(MediaStore.Video.Media.TITLE));
+			String path = c.getString(c.getColumnIndex(MediaStore.Video.Media.DATA));
+			String name = c.getString(c.getColumnIndex(MediaStore.Video.Media.TITLE));
 			System.out.println("--name-->" + name + "path" + path);
 			file.put("name", name);
 			file.put("path", path);
@@ -92,8 +88,7 @@ public class RemoteShowActivity extends ListActivity {
 			// TODO Auto-generated method stub
 			ViewHolder holder;
 			if (convertView == null) {
-				convertView = LinearLayout.inflate(RemoteShowActivity.this,
-						R.layout.listitem, null);
+				convertView = LinearLayout.inflate(RemoteShowActivity.this,R.layout.listitem, null);
 				holder = new ViewHolder(convertView);
 				convertView.setTag(holder);
 			} else {

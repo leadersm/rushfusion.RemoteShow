@@ -87,8 +87,7 @@ public class ScreenControlActivity extends Activity {
 	 * @return
 	 */
 	public static boolean checkNetworking(Context context) {
-		ConnectivityManager cm = (ConnectivityManager) context
-				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo nwi = cm.getActiveNetworkInfo();
 		if (nwi != null) {
 			return nwi.isAvailable();
