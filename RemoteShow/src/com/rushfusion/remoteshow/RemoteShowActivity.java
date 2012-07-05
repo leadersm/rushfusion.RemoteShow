@@ -1,20 +1,18 @@
 package com.rushfusion.remoteshow;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,13 +20,9 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class RemoteShowActivity extends Activity {
 	
-	private Button openBtn;
 	private ListView showLV;
-	private Cursor cTitle;
-	private Cursor cPath;
-	private int fileNum;
-	private String[] videoNames ;
-	private String[] videoPaths;
+	private Cursor c;
+	private List<HashMap<String,String>> data;
 	
     /** Called when the activity is first created. */
     @Override
@@ -37,46 +31,9 @@ public class RemoteShowActivity extends Activity {
         setContentView(R.layout.main);
         showLV = (ListView)findViewById(R.id.showLocalVideoFiles);
         
+        data = obtainVideos();
         
-//        =======================获取视频文件名称=======================
-        ContentResolver contentResolver = getContentResolver();
-        String[] titles = new String[]{MediaStore.Video.Media.TITLE};
-        cTitle = contentResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,titles,null,null,MediaStore.Video.Media.DEFAULT_SORT_ORDER);
-        cTitle.moveToFirst();
-        fileNum = cTitle.getCount();
-        System.out.println("文件数："+fileNum);
-        videoNames = new String[fileNum];
-        for(int i=0;i<fileNum;i++){
-        	videoNames[i] = cTitle.getString(cTitle.getColumnIndex(MediaStore.Video.Media.TITLE));
-        	System.out.println("文件名称为："+cTitle.getString(cTitle.getColumnIndex(MediaStore.Video.Media.TITLE)));
-        	cTitle.moveToNext();
-        }
-        cTitle.close();
-        
-        
-//        =======================获取视频文件路径=======================
-        String[] paths = new String[]{MediaStore.Video.Media.DATA};
-        cPath = contentResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, paths, null, null, MediaStore.Video.Media.DEFAULT_SORT_ORDER);
-        cPath.moveToFirst();
-        videoPaths = new String[fileNum];
-        for(int j=0;j<fileNum;j++){
-        	videoPaths[j] = cPath.getString(cPath.getColumnIndex(MediaStore.Video.Media.DATA));
-        	System.out.println("路径为："+cPath.getString(cPath.getColumnIndex(MediaStore.Video.Media.DATA)));
-        	cPath.moveToNext();
-        }
-        cPath.close();
-        
-        
-        
-        openBtn = (Button)findViewById(R.id.openLocalVideoFiles);
-        openBtn.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				showLV.setAdapter(new MyAdapter());
-			}
-		});
+        showLV.setAdapter(new MyAdapter());
         
         showLV.setOnItemClickListener(new OnItemClickListener() {
 
@@ -84,18 +41,39 @@ public class RemoteShowActivity extends Activity {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				// TODO Auto-generated method stub
-				//发送路径给service，service通知电视开始播放
 				
 			}
 		});
     }
     
-    class MyAdapter extends BaseAdapter{
+    public List<HashMap<String,String>> obtainVideos() {
+		// TODO Auto-generated method stub
+    	List<HashMap<String,String>> files = new ArrayList<HashMap<String,String>>();
+    	ContentResolver contentResolver = getContentResolver();
+    	String[] paths = new String[]{MediaStore.Video.Media.DATA,MediaStore.Video.Media.TITLE};
+        c = contentResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, paths, null, null, MediaStore.Video.Media.DEFAULT_SORT_ORDER);
+        c.moveToFirst();
+        for(int i=0;i<c.getCount();i++){
+        	HashMap<String,String> file = new HashMap<String,String>();
+        	String path = c.getString(c.getColumnIndex(MediaStore.Video.Media.DATA));
+        	String name = c.getString(c.getColumnIndex(MediaStore.Video.Media.TITLE));
+        	System.out.println("路径为："+path+"--name-->"+name);
+        	file.put("name", name);
+        	file.put("path", path);
+        	files.add(file);
+        	c.moveToNext();
+        }
+        c.close();
+        return files;
+	}
+
+
+	class MyAdapter extends BaseAdapter{
 
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
-			return fileNum;
+			return data.size();
 		}
 
 		@Override
@@ -122,8 +100,7 @@ public class RemoteShowActivity extends Activity {
 				holder = (ViewHolder) convertView.getTag();
 			}
 			holder.position = position;
-			holder.mTextView.setText(videoNames[position]);
-//			holder.mEditText.setText(map.get(position));
+			holder.mTextView.setText(data.get(position).get("name"));
 			return convertView;
 		}
 		class ViewHolder {
@@ -140,9 +117,3 @@ public class RemoteShowActivity extends Activity {
     }
 }
 
-//Map<String,String> file = new HashMap<String,String>();
-//file.put("name", "");
-//file.put("path", "");
-//
-//List<HashMap<String,String>> list ;
-//list.add(file);
