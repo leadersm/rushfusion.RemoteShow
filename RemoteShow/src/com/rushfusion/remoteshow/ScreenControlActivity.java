@@ -18,21 +18,21 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.rushfusion.http.HttpServer;
 import com.rushfusion.remoteshow.bean.STB;
 import com.rushfusion.remoteshow.util.MscpDataParser;
 import com.rushfusion.remoteshow.util.XmlUtil;
@@ -53,12 +53,16 @@ public class ScreenControlActivity extends Activity {
 	private LinearLayout stblist;
 	private Handler handler;
 	private DatagramSocket s = null;
-	private SharedPreferences sp;
+	String fileName,path;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		initHttp();
+		Intent intent = getIntent();
+		fileName = intent.getStringExtra("name");
+		path = intent.getStringExtra("path");
 		init();
 	}
 
@@ -129,13 +133,23 @@ public class ScreenControlActivity extends Activity {
 		return null;
 	}
 
+	private void initHttp() {
+		HttpServer.getInstance().init(this);
+		HttpServer.getInstance().startServer();
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		HttpServer.getInstance().stopServer();
+	}
 	private void findByIds() {
 		inflater = LayoutInflater.from(this);
 		mIp = (TextView) findViewById(R.id.mIp);
 		searchBtn = (Button) findViewById(R.id.search);
 		clearBtn = (Button) findViewById(R.id.clear);
 		stblist = (LinearLayout) findViewById(R.id.list);
-		mIp.setText("本机ip-->" + getLocalIpAddress());
+		mIp.setText("本机ip-->" + getLocalIpAddress()+"  名称："+fileName+"  路径:"+path);
 		handler = new Handler() {
 
 			@Override
@@ -150,7 +164,6 @@ public class ScreenControlActivity extends Activity {
 				View view = inflater.inflate(R.layout.stbitem, null);
 				holder.name = (TextView) view.findViewById(R.id.stbName);
 				holder.ip = (TextView) view.findViewById(R.id.stbIp);
-				holder.title = (EditText) view.findViewById(R.id.title);
 				holder.play = (Button) view.findViewById(R.id.play);
 				holder.pause = (Button) view.findViewById(R.id.pause);
 				holder.stop = (Button) view.findViewById(R.id.stop);
@@ -188,7 +201,6 @@ public class ScreenControlActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				searchBtn.setEnabled(true);
 				stblist.removeAllViews();
 				stbs.clear();
@@ -271,7 +283,6 @@ public class ScreenControlActivity extends Activity {
 									}
 								}
 								private boolean checkStbIsExist(STB stb) {
-									// TODO Auto-generated method stub
 									for (STB temp : stbs) {
 										if (temp.getIp().equals(stb.getIp()))
 											return true;
@@ -305,20 +316,16 @@ public class ScreenControlActivity extends Activity {
 
 		TextView name;
 		TextView ip;
-		EditText title;
 		Button play,pause,stop,ff,fb;
 		
 		public void init(final STB stb) {
 			name.setText(stb.getUsername());
 			ip.setText(stb.getIp());
-			title.setText(sp.getString("title"+stb.getIp(), "满秋"));
 			play.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					byte[] data = XmlUtil.PlayReq(1, stb.getIp(), "喜洋洋灰太狼", 1000, 
-							"http://tvsrv.webhop.net/video/ccd935e8-8f6e-4d35-96d5-7bac3d9329e6.mp4");
+					byte[] data = XmlUtil.PlayReq(1, stb.getIp(), fileName, 1000,getUrl(path));
 					sendDataTo(stb, data);
 				}
 				
@@ -327,7 +334,6 @@ public class ScreenControlActivity extends Activity {
 				
 				@Override
 				public void onClick(View v) {
-					// TODO Auto-generated method stub
 					byte[] data = XmlUtil.PauseReq(1, stb.getIp());
 					sendDataTo(stb, data);
 				}
@@ -336,7 +342,6 @@ public class ScreenControlActivity extends Activity {
 				
 				@Override
 				public void onClick(View v) {
-					// TODO Auto-generated method stub
 					byte[] data = XmlUtil.StopReq(1, stb.getIp());
 					sendDataTo(stb, data);
 				}
@@ -345,7 +350,6 @@ public class ScreenControlActivity extends Activity {
 				
 				@Override
 				public void onClick(View v) {
-					// TODO Auto-generated method stub
 //					sendDataTo(stb, data);
 				}
 			});
@@ -353,13 +357,17 @@ public class ScreenControlActivity extends Activity {
 				
 				@Override
 				public void onClick(View v) {
-					// TODO Auto-generated method stub
 //					sendDataTo(stb, data);
 				}
 			});
 			
-			
-			
+		}
+
+		protected String getUrl(String path) {
+			//http://192.168.1.104:9905/download/sdcard/video/video.mp4
+			String url = "http://"+localIp+":9905"+path;
+			Log.d("RemoteShow", "url--->"+url);
+			return url;
 		}
 		
 	}
