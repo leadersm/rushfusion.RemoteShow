@@ -17,8 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.android.rushfusion.http.HttpServer;
-
 public class RemoteShowActivity extends ListActivity {
 
 	
@@ -100,6 +98,7 @@ public class RemoteShowActivity extends ListActivity {
 				holder = (ViewHolder) convertView.getTag();
 			}
 			holder.position = position;
+			holder.mTextView.setTextSize(24);
 			holder.mTextView.setText(data.get(position).get("name"));
 			return convertView;
 		}

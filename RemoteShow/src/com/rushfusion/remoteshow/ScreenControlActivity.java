@@ -1,11 +1,13 @@
 package com.rushfusion.remoteshow;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -49,7 +51,7 @@ public class ScreenControlActivity extends Activity {
 	private LayoutInflater inflater;
 	private String localIp = "";
 
-	private List<STB> stbs = new ArrayList<STB>();
+	private static List<STB> stbs;
 	private LinearLayout stblist;
 	private Handler handler;
 	private DatagramSocket s = null;
@@ -69,6 +71,7 @@ public class ScreenControlActivity extends Activity {
 	private void init() {
 		if (checkNetworking(this)) {
 			try {
+				if(stbs==null)stbs = new ArrayList<STB>();
 				s = new DatagramSocket(PORT);
 				findByIds();
 				Thread mReceiveThread = new Thread(updateThread);
@@ -365,9 +368,20 @@ public class ScreenControlActivity extends Activity {
 
 		protected String getUrl(String path) {
 			//http://192.168.1.104:9905/download/sdcard/video/video.mp4
-			String url = "http://"+localIp+":9905"+path;
+			StringBuffer url = new StringBuffer("http://"+localIp+":9905/download");
+			String [] temp = path.split("/");
+			try {
+				for(int i = 0;i<temp.length ;i++){
+					System.out.println(temp[i]);
+					temp[i] = URLEncoder.encode(temp[i] , "utf-8");
+					if(i>0)
+					url.append('/'+temp[i]);
+				}
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+			}
 			Log.d("RemoteShow", "url--->"+url);
-			return url;
+			return url.toString();
 		}
 		
 	}
