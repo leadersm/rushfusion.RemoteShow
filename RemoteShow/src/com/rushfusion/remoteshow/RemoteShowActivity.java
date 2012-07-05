@@ -95,6 +95,7 @@ public class RemoteShowActivity extends ListActivity {
 				holder = (ViewHolder) convertView.getTag();
 			}
 			holder.position = position;
+			holder.mTextView.setTextSize(24);
 			holder.mTextView.setText(data.get(position).get("name"));
 			return convertView;
 		}
