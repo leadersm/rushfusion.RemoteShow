@@ -3,5 +3,6 @@
 
     <string name="hello">Hello World, RemoteShowActivity!</string>
     <string name="app_name">RemoteShow</string>
+    <string name="title">请填写节目名称</string>
 
 </resources>
