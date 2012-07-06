@@ -108,18 +108,15 @@ public class ScreenControlActivity extends Activity {
 					.setCancelable(false)
 					.setPositiveButton("设置",
 							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									Intent intent = new Intent(
-											Settings.ACTION_WIRELESS_SETTINGS);
+								public void onClick(DialogInterface dialog,int id) {
+									Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
 									startActivity(intent);
 									init();
 								}
 							})
 					.setNegativeButton("退出",
 							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
+								public void onClick(DialogInterface dialog,int id) {
 									finish();
 								}
 							});
@@ -226,8 +223,7 @@ public class ScreenControlActivity extends Activity {
 
 	public String getLocalIpAddress() {
 		try {
-			for (Enumeration<NetworkInterface> en = NetworkInterface
-					.getNetworkInterfaces(); en.hasMoreElements();) {
+			for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
 				NetworkInterface intf = en.nextElement();
 				for (Enumeration<InetAddress> enumIpAddr = intf
 						.getInetAddresses(); enumIpAddr.hasMoreElements();) {
@@ -260,18 +256,16 @@ public class ScreenControlActivity extends Activity {
 					String str = new String(buffer, 0, packet.getLength());
 					System.out.println("receive-->" + str);
 					MscpDataParser.getInstance().init(this);
-					MscpDataParser.getInstance().parse(packet,
-							new MscpDataParser.CallBack() {
+					MscpDataParser.getInstance().parse(packet,new MscpDataParser.CallBack() {
 								@Override
-								public void onParseCompleted(
-										HashMap<String, String> map) {
+								public void onParseCompleted(HashMap<String, String> map) {
 									if (map != null) {
 										String cmd = map.get("cmd");
 										if(cmd.equals("searchresp")){
 											System.out.println("IP===>"+ map.get("IP"));
 											if (!map.get("IP").equals("null")&& !map.get("IP").equals(localIp)) {
 												STB stb = new STB(map.get("IP"),"test", "test", "test","test");
-												if (!checkStbIsExist(stb)){
+												if (!checkStbIsExist(stb)){ //如果在列表中没有该stb，则添加上
 													stbs.add(stb);
 													Message msg = new Message();
 													msg.what = 1;
