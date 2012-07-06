@@ -61,7 +61,6 @@ public class ScreenControlActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		initHttp();
 		Intent intent = getIntent();
 		fileName = intent.getStringExtra("name");
 		path = intent.getStringExtra("path");
@@ -136,16 +135,7 @@ public class ScreenControlActivity extends Activity {
 		return null;
 	}
 
-	private void initHttp() {
-		HttpServer.getInstance().init(this);
-		HttpServer.getInstance().startServer();
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-		HttpServer.getInstance().stopServer();
-	}
+	
 	private void findByIds() {
 		inflater = LayoutInflater.from(this);
 		mIp = (TextView) findViewById(R.id.mIp);

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.android.rushfusion.http.HttpServer;
+
 import android.app.ListActivity;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -28,10 +30,23 @@ public class RemoteShowActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		initHttp();
 		data = obtainVideos();
 		setListAdapter(new MyAdapter());
 	}
 
+	private void initHttp() {
+		HttpServer.getInstance().init(this);
+		HttpServer.getInstance().startServer();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		HttpServer.getInstance().stopServer();
+	}
+	
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
