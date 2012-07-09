@@ -8,6 +8,8 @@ import android.app.ListActivity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
@@ -35,6 +37,8 @@ public class RemoteShowActivity extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
+		l.setDivider(new ColorDrawable(Color.RED));
+		l.setDividerHeight(6);
 		Intent i = new Intent(this,ScreenControlActivity.class);
 		i.putExtra("path", data.get(position).get("path"));
 		i.putExtra("name", data.get(position).get("name"));
@@ -95,7 +99,7 @@ public class RemoteShowActivity extends ListActivity {
 				holder = (ViewHolder) convertView.getTag();
 			}
 			holder.position = position;
-			holder.mTextView.setTextSize(24);
+			holder.mTextView.setTextSize(30);
 			holder.mTextView.setText(data.get(position).get("name"));
 			return convertView;
 		}
