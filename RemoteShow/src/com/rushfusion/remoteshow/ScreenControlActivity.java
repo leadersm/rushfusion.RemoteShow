@@ -89,8 +89,7 @@ public class ScreenControlActivity extends Activity {
 	 * @return
 	 */
 	public static boolean checkNetworking(Context context) {
-		ConnectivityManager cm = (ConnectivityManager) context
-				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo nwi = cm.getActiveNetworkInfo();
 		if (nwi != null) {
 			return nwi.isAvailable();
@@ -108,18 +107,15 @@ public class ScreenControlActivity extends Activity {
 					.setCancelable(false)
 					.setPositiveButton("设置",
 							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									Intent intent = new Intent(
-											Settings.ACTION_WIRELESS_SETTINGS);
+								public void onClick(DialogInterface dialog,int id) {
+									Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
 									startActivity(intent);
 									init();
 								}
 							})
 					.setNegativeButton("退出",
 							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
+								public void onClick(DialogInterface dialog,int id) {
 									finish();
 								}
 							});
@@ -216,8 +212,7 @@ public class ScreenControlActivity extends Activity {
 
 	public String getLocalIpAddress() {
 		try {
-			for (Enumeration<NetworkInterface> en = NetworkInterface
-					.getNetworkInterfaces(); en.hasMoreElements();) {
+			for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
 				NetworkInterface intf = en.nextElement();
 				for (Enumeration<InetAddress> enumIpAddr = intf
 						.getInetAddresses(); enumIpAddr.hasMoreElements();) {
@@ -250,18 +245,16 @@ public class ScreenControlActivity extends Activity {
 					String str = new String(buffer, 0, packet.getLength());
 					System.out.println("receive-->" + str);
 					MscpDataParser.getInstance().init(this);
-					MscpDataParser.getInstance().parse(packet,
-							new MscpDataParser.CallBack() {
+					MscpDataParser.getInstance().parse(packet,new MscpDataParser.CallBack() {
 								@Override
-								public void onParseCompleted(
-										HashMap<String, String> map) {
+								public void onParseCompleted(HashMap<String, String> map) {
 									if (map != null) {
 										String cmd = map.get("cmd");
 										if(cmd.equals("searchresp")){
 											System.out.println("IP===>"+ map.get("IP"));
 											if (!map.get("IP").equals("null")&& !map.get("IP").equals(localIp)) {
 												STB stb = new STB(map.get("IP"),"test", "test", "test","test");
-												if (!checkStbIsExist(stb)){
+												if (!checkStbIsExist(stb)){ //如果在列表中没有该stb，则添加上
 													stbs.add(stb);
 													Message msg = new Message();
 													msg.what = 1;
@@ -319,7 +312,9 @@ public class ScreenControlActivity extends Activity {
 				@Override
 				public void onClick(View v) {
 					byte[] data = XmlUtil.PlayReq(1, stb.getIp(), fileName, 1000,getUrl(path));
+					
 					sendDataTo(stb, data);
+					play.setEnabled(false);
 				}
 				
 			});
@@ -329,6 +324,7 @@ public class ScreenControlActivity extends Activity {
 				public void onClick(View v) {
 					byte[] data = XmlUtil.PauseReq(1, stb.getIp());
 					sendDataTo(stb, data);
+					play.setEnabled(true);
 				}
 			});
 			stop.setOnClickListener(new OnClickListener() {
@@ -337,6 +333,7 @@ public class ScreenControlActivity extends Activity {
 				public void onClick(View v) {
 					byte[] data = XmlUtil.StopReq(1, stb.getIp());
 					sendDataTo(stb, data);
+					play.setEnabled(true);
 				}
 			});
 			seekBar.setMax(100) ;

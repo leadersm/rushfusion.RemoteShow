@@ -10,6 +10,8 @@ import android.app.ListActivity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
@@ -50,6 +52,8 @@ public class RemoteShowActivity extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
+		l.setDivider(new ColorDrawable(Color.RED));
+		l.setDividerHeight(6);
 		Intent i = new Intent(this,ScreenControlActivity.class);
 		i.putExtra("path", data.get(position).get("path"));
 		i.putExtra("name", data.get(position).get("name"));
@@ -59,17 +63,15 @@ public class RemoteShowActivity extends ListActivity {
 	public List<HashMap<String, String>> obtainVideos() {
 		List<HashMap<String, String>> files = new ArrayList<HashMap<String, String>>();
 		ContentResolver contentResolver = getContentResolver();
-		String[] paths = new String[] { MediaStore.Video.Media.DATA,
-				MediaStore.Video.Media.TITLE };
+		String[] video = new String[] { MediaStore.Video.Media.DATA,
+				                        MediaStore.Video.Media.TITLE };
 		c = contentResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-				paths, null, null, MediaStore.Video.Media.DEFAULT_SORT_ORDER);
+								  video, null, null, MediaStore.Video.Media.DEFAULT_SORT_ORDER);
 		c.moveToFirst();
 		for (int i = 0; i < c.getCount(); i++) {
 			HashMap<String, String> file = new HashMap<String, String>();
-			String path = c.getString(c
-					.getColumnIndex(MediaStore.Video.Media.DATA));
-			String name = c.getString(c
-					.getColumnIndex(MediaStore.Video.Media.TITLE));
+			String path = c.getString(c.getColumnIndex(MediaStore.Video.Media.DATA));
+			String name = c.getString(c.getColumnIndex(MediaStore.Video.Media.TITLE));
 			System.out.println("--name-->" + name + "path" + path);
 			file.put("name", name);
 			file.put("path", path);
@@ -105,15 +107,14 @@ public class RemoteShowActivity extends ListActivity {
 			// TODO Auto-generated method stub
 			ViewHolder holder;
 			if (convertView == null) {
-				convertView = LinearLayout.inflate(RemoteShowActivity.this,
-						R.layout.listitem, null);
+				convertView = LinearLayout.inflate(RemoteShowActivity.this,R.layout.listitem, null);
 				holder = new ViewHolder(convertView);
 				convertView.setTag(holder);
 			} else {
 				holder = (ViewHolder) convertView.getTag();
 			}
 			holder.position = position;
-			holder.mTextView.setTextSize(24);
+			holder.mTextView.setTextSize(30);
 			holder.mTextView.setText(data.get(position).get("name"));
 			return convertView;
 		}
