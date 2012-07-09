@@ -34,6 +34,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.rushfusion.remoteshow.bean.STB;
 import com.rushfusion.remoteshow.util.MscpDataParser;
@@ -262,8 +263,9 @@ public class ScreenControlActivity extends Activity {
 													handler.sendMessageDelayed(msg, 200);
 												}
 											}
-										}else if(cmd.equals("")){
-											
+										}else if(cmd.equals("completeresp")){
+											Toast.makeText(ScreenControlActivity.this, "播放完毕！！", 1000).show();
+											finish();
 										}
 									}
 								}
