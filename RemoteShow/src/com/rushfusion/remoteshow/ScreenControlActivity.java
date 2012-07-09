@@ -32,9 +32,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.android.rushfusion.http.HttpServer;
 import com.rushfusion.remoteshow.bean.STB;
 import com.rushfusion.remoteshow.util.MscpDataParser;
 import com.rushfusion.remoteshow.util.XmlUtil;
@@ -160,8 +160,7 @@ public class ScreenControlActivity extends Activity {
 				holder.play = (Button) view.findViewById(R.id.play);
 				holder.pause = (Button) view.findViewById(R.id.pause);
 				holder.stop = (Button) view.findViewById(R.id.stop);
-				holder.ff = (Button) view.findViewById(R.id.ff);
-				holder.fb = (Button) view.findViewById(R.id.fb);
+				holder.seekBar = (SeekBar) view.findViewById(R.id.seekBar1);
 				holder.init(stb);
 				return view;
 			}
@@ -309,7 +308,8 @@ public class ScreenControlActivity extends Activity {
 
 		TextView name;
 		TextView ip;
-		Button play,pause,stop,ff,fb;
+		Button play,pause,stop;
+		SeekBar seekBar;
 		
 		public void init(final STB stb) {
 			name.setText(stb.getUsername());
@@ -339,21 +339,40 @@ public class ScreenControlActivity extends Activity {
 					sendDataTo(stb, data);
 				}
 			});
-			ff.setOnClickListener(new OnClickListener() {
+			seekBar.setMax(100) ;
+			seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+				
+				private int seekPosition;
+
+				@Override
+				public void onStopTrackingTouch(SeekBar seekBar) {
+					// TODO Auto-generated method stub
+					try {
+						Log.d("remote-show", "=======onStopTrackingTouch======") ;
+						Log.d("remote-show", "seekPosition:"+seekPosition) ;
+						byte[] data = XmlUtil.SeekReq(1, localIp, seekPosition) ;
+						InetAddress stbIp = InetAddress.getByName(stb.getIp());
+						DatagramPacket p = new DatagramPacket(data, data.length, stbIp,XmlUtil.STB_PORT);
+						s.send(p);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
 				
 				@Override
-				public void onClick(View v) {
-//					sendDataTo(stb, data);
+				public void onStartTrackingTouch(SeekBar seekBar) {
+					// TODO Auto-generated method stub
+					
 				}
-			});
-			fb.setOnClickListener(new OnClickListener() {
 				
 				@Override
-				public void onClick(View v) {
-//					sendDataTo(stb, data);
+				public void onProgressChanged(SeekBar seekBar, int progress,
+						boolean fromUser) {
+					if(fromUser) {
+						seekPosition = seekBar.getProgress();
+					}
 				}
-			});
-			
+			}) ;
 		}
 
 		protected String getUrl(String path) {
