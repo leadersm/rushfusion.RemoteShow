@@ -322,7 +322,9 @@ public class ScreenControlActivity extends Activity {
 				@Override
 				public void onClick(View v) {
 					byte[] data = XmlUtil.PlayReq(1, stb.getIp(), fileName, 1000,getUrl(path));
+					
 					sendDataTo(stb, data);
+					play.setEnabled(false);
 				}
 				
 			});
@@ -332,6 +334,7 @@ public class ScreenControlActivity extends Activity {
 				public void onClick(View v) {
 					byte[] data = XmlUtil.PauseReq(1, stb.getIp());
 					sendDataTo(stb, data);
+					play.setEnabled(true);
 				}
 			});
 			stop.setOnClickListener(new OnClickListener() {
@@ -340,6 +343,7 @@ public class ScreenControlActivity extends Activity {
 				public void onClick(View v) {
 					byte[] data = XmlUtil.StopReq(1, stb.getIp());
 					sendDataTo(stb, data);
+					play.setEnabled(true);
 				}
 			});
 			ff.setOnClickListener(new OnClickListener() {
