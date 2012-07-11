@@ -266,7 +266,6 @@ public class ScreenControlActivity extends Activity {
 			startReceive();
 		}
 	};
-//	int temp = 0;
 	protected void startReceive() {
 		try {
 			byte[] buffer = new byte[1024];
