@@ -136,6 +136,7 @@ public class ScreenControlActivity extends Activity {
 	}
 
 	
+	@SuppressWarnings("unchecked")
 	private void findByIds() {
 		inflater = LayoutInflater.from(this);
 		mIpTV = (TextView) findViewById(R.id.mIp);
@@ -148,6 +149,9 @@ public class ScreenControlActivity extends Activity {
 		SharedPreferences sp = getSharedPreferences("RemoteShow", Context.MODE_WORLD_WRITEABLE);
 		final SharedPreferences.Editor editor = sp.edit();
 		Map<String,String> data = (Map<String, String>) sp.getAll();
+		if(data.keySet().size()<=0){
+			searchBtn.setEnabled(true);
+		}
 		for(String key:data.keySet()){
 			STB stb = new STB();
 			String name = data.get(key);
@@ -200,6 +204,8 @@ public class ScreenControlActivity extends Activity {
 			public void onClick(View v) {
 				searchBtn.setEnabled(true);
 				stblist.removeAllViews();
+				editor.clear();
+				editor.commit();
 				stbs.clear();
 			}
 		});
