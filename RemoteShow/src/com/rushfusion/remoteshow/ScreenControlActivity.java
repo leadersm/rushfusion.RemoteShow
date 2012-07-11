@@ -215,12 +215,17 @@ public class ScreenControlActivity extends Activity {
 		try {
 			for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
 				NetworkInterface intf = en.nextElement();
-				for (Enumeration<InetAddress> enumIpAddr = intf
-						.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+				for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses();
+						enumIpAddr.hasMoreElements();) {
 					InetAddress inetAddress = enumIpAddr.nextElement();
-					if (!inetAddress.isLoopbackAddress()) {
-						return inetAddress.getHostAddress().toString();
-					}
+					String s = inetAddress.getHostAddress().toString();
+//					if (!inetAddress.isLoopbackAddress()) {
+//						return s;
+//					}
+					if(s.indexOf(":")==-1 && !(s.equals("127.0.0.1"))){
+		        		return s;
+		        	}
+					
 				}
 			}
 		} catch (SocketException ex) {
