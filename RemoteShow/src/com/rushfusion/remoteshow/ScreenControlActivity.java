@@ -266,7 +266,7 @@ public class ScreenControlActivity extends Activity {
 			startReceive();
 		}
 	};
-	int temp = 0;
+//	int temp = 0;
 	protected void startReceive() {
 		try {
 			byte[] buffer = new byte[1024];
@@ -285,7 +285,7 @@ public class ScreenControlActivity extends Activity {
 										if(cmd.equals("searchresp")){
 											System.out.println("IP===>"+ map.get("IP"));
 											if (!map.get("IP").equals("null")&& !map.get("IP").equals(localIp)) {
-												STB stb = new STB(map.get("IP"),"test", "test"+temp++, "test","test");
+												STB stb = new STB(map.get("IP"),"test", map.get("username"), "test","test");
 												if (!checkStbIsExist(stb)){ //如果在列表中没有该stb，则添加上
 													stbs.add(stb);
 													Message msg = new Message();
