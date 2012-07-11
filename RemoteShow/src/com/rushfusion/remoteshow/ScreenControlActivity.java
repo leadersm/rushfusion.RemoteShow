@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -20,10 +21,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.provider.Settings;
 import android.util.Log;
@@ -47,7 +50,7 @@ public class ScreenControlActivity extends Activity {
 	private static final int DIALOG_NETWORK = 0;
 	private static final int DIALOG_PROGRESS = 1;
 	
-	private TextView mIp;
+	private TextView mIpTV;
 	private Button searchBtn, clearBtn;
 	private LayoutInflater inflater;
 	private String localIp = "";
@@ -133,35 +136,40 @@ public class ScreenControlActivity extends Activity {
 	}
 
 	
+	@SuppressWarnings("unchecked")
 	private void findByIds() {
 		inflater = LayoutInflater.from(this);
-		mIp = (TextView) findViewById(R.id.mIp);
+		mIpTV = (TextView) findViewById(R.id.mIp);
 		searchBtn = (Button) findViewById(R.id.search);
+		searchBtn.setEnabled(false);
 		clearBtn = (Button) findViewById(R.id.clear);
 		stblist = (LinearLayout) findViewById(R.id.list);
-		mIp.setText("本机ip-->" + getLocalIpAddress()+"  名称："+fileName+"  路径:"+path);
+		mIpTV.setText("本机ip-->" + getLocalIpAddress()+"  名称："+fileName+"  路径:"+path);
+		
+		SharedPreferences sp = getSharedPreferences("RemoteShow", Context.MODE_WORLD_WRITEABLE);
+		final SharedPreferences.Editor editor = sp.edit();
+		Map<String,String> data = (Map<String, String>) sp.getAll();
+		if(data.keySet().size()<=0){
+			searchBtn.setEnabled(true);
+		}
+		for(String key:data.keySet()){
+			STB stb = new STB();
+			String name = data.get(key);
+			stb.setIp(key);
+			stb.setUsername(name);
+			stblist.addView(getView(stb));
+		}
+		
 		handler = new Handler() {
 
 			@Override
 			public void handleMessage(Message msg) {
 				super.handleMessage(msg);
 				STB stb = (STB) msg.obj;
+				editor.putString(stb.getIp(),stb.getUsername());
 				stblist.addView(getView(stb));
+				editor.commit();
 			}
-
-			public View getView(STB stb) {
-				ViewHolder holder = new ViewHolder();
-				View view = inflater.inflate(R.layout.stbitem, null);
-				holder.name = (TextView) view.findViewById(R.id.stbName);
-				holder.ip = (TextView) view.findViewById(R.id.stbIp);
-				holder.play = (Button) view.findViewById(R.id.play);
-				holder.pause = (Button) view.findViewById(R.id.pause);
-				holder.stop = (Button) view.findViewById(R.id.stop);
-				holder.seekBar = (SeekBar) view.findViewById(R.id.seekBar1);
-				holder.init(stb);
-				return view;
-			}
-			
 		};
 		
 		searchBtn.setOnClickListener(new OnClickListener() {
@@ -180,7 +188,11 @@ public class ScreenControlActivity extends Activity {
 							if (!localIp.equals(destIp + i))
 								search(destIp + i);
 						}
-						dismissDialog(DIALOG_PROGRESS);
+						try {
+							dismissDialog(DIALOG_PROGRESS);
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
 					}
 				}).start();
 			}
@@ -192,10 +204,24 @@ public class ScreenControlActivity extends Activity {
 			public void onClick(View v) {
 				searchBtn.setEnabled(true);
 				stblist.removeAllViews();
+				editor.clear();
+				editor.commit();
 				stbs.clear();
 			}
 		});
 
+	}
+	public View getView(STB stb) {
+		ViewHolder holder = new ViewHolder();
+		View view = inflater.inflate(R.layout.stbitem, null);
+		holder.name = (TextView) view.findViewById(R.id.stbName);
+		holder.ip = (TextView) view.findViewById(R.id.stbIp);
+		holder.play = (Button) view.findViewById(R.id.play);
+		holder.pause = (Button) view.findViewById(R.id.pause);
+		holder.stop = (Button) view.findViewById(R.id.stop);
+		holder.seekBar = (SeekBar) view.findViewById(R.id.seekBar1);
+		holder.init(stb);
+		return view;
 	}
 
 	public void search(String destip) {
@@ -240,7 +266,7 @@ public class ScreenControlActivity extends Activity {
 			startReceive();
 		}
 	};
-
+	int temp = 0;
 	protected void startReceive() {
 		try {
 			byte[] buffer = new byte[1024];
@@ -259,7 +285,7 @@ public class ScreenControlActivity extends Activity {
 										if(cmd.equals("searchresp")){
 											System.out.println("IP===>"+ map.get("IP"));
 											if (!map.get("IP").equals("null")&& !map.get("IP").equals(localIp)) {
-												STB stb = new STB(map.get("IP"),"test", "test", "test","test");
+												STB stb = new STB(map.get("IP"),"test", "test"+temp++, "test","test");
 												if (!checkStbIsExist(stb)){ //如果在列表中没有该stb，则添加上
 													stbs.add(stb);
 													Message msg = new Message();
@@ -268,8 +294,10 @@ public class ScreenControlActivity extends Activity {
 													handler.sendMessageDelayed(msg, 200);
 												}
 											}
-										}else if(cmd.equals("completeresp")){
+										}else if(cmd.equals("completeresp")){//'completeresp' 
+											Looper.prepare();
 											Toast.makeText(ScreenControlActivity.this, "播放完毕！！", 1000).show();
+											Looper.loop();
 											finish();
 										}
 									}
@@ -381,7 +409,7 @@ public class ScreenControlActivity extends Activity {
 
 		protected String getUrl(String path) {
 			//http://192.168.1.104:9905/download/sdcard/video/video.mp4
-			StringBuffer url = new StringBuffer("http://"+localIp+":9905/download");
+			StringBuffer url = new StringBuffer("http://"+getLocalIpAddress().toString()+":9905/download");
 			String [] temp = path.split("/");
 			try {
 				for(int i = 0;i<temp.length ;i++){
@@ -409,4 +437,11 @@ public class ScreenControlActivity extends Activity {
 		}
 	}
 
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		if(s!=null)s.close();
+	}
+	
 }
