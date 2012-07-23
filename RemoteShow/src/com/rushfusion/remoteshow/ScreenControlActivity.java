@@ -50,6 +50,9 @@ public class ScreenControlActivity extends Activity {
 	private static final int DIALOG_NETWORK = 0;
 	private static final int DIALOG_PROGRESS = 1;
 	
+	private static final int PRIORITY = 7;
+	
+	
 	private TextView mIpTV;
 	private Button searchBtn, clearBtn;
 	private LayoutInflater inflater;
@@ -78,6 +81,7 @@ public class ScreenControlActivity extends Activity {
 				s = new DatagramSocket(PORT);
 				findByIds();
 				Thread mReceiveThread = new Thread(updateThread);
+				mReceiveThread.setPriority(PRIORITY);
 				mReceiveThread.start();
 			} catch (SocketException e) {
 				e.printStackTrace();
@@ -127,7 +131,7 @@ public class ScreenControlActivity extends Activity {
 		case DIALOG_PROGRESS:
 			ProgressDialog dialog = new ProgressDialog(this);
 			dialog.setTitle("提示!");
-			dialog.setMessage("正在搜索,请稍后...");
+			dialog.setMessage("正在搜索,请稍候...");
 			return dialog;
 		default:
 			break;
@@ -144,7 +148,8 @@ public class ScreenControlActivity extends Activity {
 		searchBtn.setEnabled(false);
 		clearBtn = (Button) findViewById(R.id.clear);
 		stblist = (LinearLayout) findViewById(R.id.list);
-		mIpTV.setText("本机ip-->" + getLocalIpAddress()+"  名称："+fileName+"  路径:"+path);
+		localIp = getLocalIpAddress();
+		mIpTV.setText("本机ip-->" + localIp+"  名称："+fileName+"  路径:"+path);
 		
 		SharedPreferences sp = getSharedPreferences("RemoteShow", Context.MODE_WORLD_WRITEABLE);
 		final SharedPreferences.Editor editor = sp.edit();
@@ -177,7 +182,7 @@ public class ScreenControlActivity extends Activity {
 			public void onClick(View v) {
 				searchBtn.setEnabled(false);
 				showDialog(DIALOG_PROGRESS);
-				localIp = getLocalIpAddress();// "192.168.2.xxx";
+//				localIp = getLocalIpAddress();// "192.168.2.xxx";
 				final String destIp = localIp.substring(0,localIp.lastIndexOf(".") + 1);
 				System.out.println("destIp---->" + destIp);
 				new Thread(new Runnable() {
@@ -227,7 +232,7 @@ public class ScreenControlActivity extends Activity {
 	public void search(String destip) {
 		try {
 			InetAddress stbIp = InetAddress.getByName(destip);
-			byte[] data = XmlUtil.SearchReq("123456", getLocalIpAddress());
+			byte[] data = XmlUtil.SearchReq("123456", localIp);
 			DatagramPacket p = new DatagramPacket(data, data.length, stbIp,XmlUtil.STB_PORT);
 			s.send(p);
 		} catch (SocketException e) {
@@ -241,12 +246,17 @@ public class ScreenControlActivity extends Activity {
 		try {
 			for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
 				NetworkInterface intf = en.nextElement();
-				for (Enumeration<InetAddress> enumIpAddr = intf
-						.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+				for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses();
+						enumIpAddr.hasMoreElements();) {
 					InetAddress inetAddress = enumIpAddr.nextElement();
-					if (!inetAddress.isLoopbackAddress()) {
-						return inetAddress.getHostAddress().toString();
-					}
+					String s = inetAddress.getHostAddress().toString();
+//					if (!inetAddress.isLoopbackAddress()) {
+//						return s;
+//					}
+					if(s.indexOf(":")==-1 && !(s.equals("127.0.0.1"))){
+		        		return s;
+		        	}
+					
 				}
 			}
 		} catch (SocketException ex) {
@@ -261,7 +271,6 @@ public class ScreenControlActivity extends Activity {
 			startReceive();
 		}
 	};
-//	int temp = 0;
 	protected void startReceive() {
 		try {
 			byte[] buffer = new byte[1024];
@@ -292,8 +301,14 @@ public class ScreenControlActivity extends Activity {
 										}else if(cmd.equals("completeresp")){//'completeresp' 
 											Looper.prepare();
 											Toast.makeText(ScreenControlActivity.this, "播放完毕！！", 1000).show();
-											Looper.loop();
 											finish();
+											Looper.loop();
+										}else if(cmd.equals("errorresp")){
+											String errorcode = map.get("errorCode");
+											Looper.prepare();
+											Toast.makeText(ScreenControlActivity.this, "出错了，请检查视频格式和路径！！error code->"+errorcode, 1).show();
+											finish();
+											Looper.loop();
 										}
 									}
 								}
@@ -341,7 +356,7 @@ public class ScreenControlActivity extends Activity {
 				
 				@Override
 				public void onClick(View v) {
-					byte[] data = XmlUtil.PlayReq(1, stb.getIp(), fileName, 1000,getUrl(path));
+					byte[] data = XmlUtil.PlayReq(1, localIp, fileName, 1000,getUrl(path));
 					
 					sendDataTo(stb, data);
 					play.setEnabled(false);
@@ -352,7 +367,7 @@ public class ScreenControlActivity extends Activity {
 				
 				@Override
 				public void onClick(View v) {
-					byte[] data = XmlUtil.PauseReq(1, stb.getIp());
+					byte[] data = XmlUtil.PauseReq(1, localIp);
 					sendDataTo(stb, data);
 					play.setEnabled(true);
 				}
@@ -361,7 +376,7 @@ public class ScreenControlActivity extends Activity {
 				
 				@Override
 				public void onClick(View v) {
-					byte[] data = XmlUtil.StopReq(1, stb.getIp());
+					byte[] data = XmlUtil.StopReq(1, localIp);
 					sendDataTo(stb, data);
 					play.setEnabled(true);
 				}
@@ -404,20 +419,19 @@ public class ScreenControlActivity extends Activity {
 
 		protected String getUrl(String path) {
 			//http://192.168.1.104:9905/download/sdcard/video/video.mp4
-			StringBuffer url = new StringBuffer("http://"+getLocalIpAddress().toString()+":9905/download");
+			StringBuffer url = new StringBuffer("http://"+localIp.toString()+":9905/download");
 			String [] temp = path.split("/");
 			try {
-				for(int i = 0;i<temp.length ;i++){
+				for(int i = 1;i<temp.length ;i++){
 					System.out.println(temp[i]);
-					temp[i] = URLEncoder.encode(temp[i] , "utf-8");
-					if(i>0)
+					temp[i] = URLEncoder.encode(temp[i] , "UTF-8");
 					url.append('/'+temp[i]);
 				}
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 			}
-			Log.d("RemoteShow", "url--->"+url);
-			return url.toString();
+			Log.d("RemoteShow", "url--->"+url.toString().replaceAll("&", "&amp;"));
+			return url.toString().replaceAll("&", "&amp;");
 		}
 		
 	}

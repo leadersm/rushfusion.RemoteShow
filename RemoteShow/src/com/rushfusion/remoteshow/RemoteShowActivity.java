@@ -34,6 +34,7 @@ public class RemoteShowActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		initHttp();
 		data = obtainVideos();
+		if(data==null)return;
 		setListAdapter(new MyAdapter());
 	}
 
@@ -67,7 +68,8 @@ public class RemoteShowActivity extends ListActivity {
 				                        MediaStore.Video.Media.TITLE };
 		c = contentResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
 								  video, null, null, MediaStore.Video.Media.DEFAULT_SORT_ORDER);
-		c.moveToFirst();
+		if(c!=null)c.moveToFirst();
+		else return null;
 		for (int i = 0; i < c.getCount(); i++) {
 			HashMap<String, String> file = new HashMap<String, String>();
 			String path = c.getString(c.getColumnIndex(MediaStore.Video.Media.DATA));
