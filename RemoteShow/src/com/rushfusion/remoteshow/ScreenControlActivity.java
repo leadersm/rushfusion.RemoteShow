@@ -430,8 +430,8 @@ public class ScreenControlActivity extends Activity {
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 			}
-			Log.d("RemoteShow", "url--->"+url);
-			return url.toString();
+			Log.d("RemoteShow", "url--->"+url.toString().replaceAll("&", "&amp;"));
+			return url.toString().replaceAll("&", "&amp;");
 		}
 		
 	}
