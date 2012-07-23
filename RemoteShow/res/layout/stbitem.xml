@@ -91,6 +91,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@drawable/playbtn_selector"
             android:text="播放" />
 
         <Button
@@ -98,6 +99,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@drawable/playbtn_selector"
             android:text="暂停" />
 
         <Button
@@ -105,6 +107,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@drawable/playbtn_selector"
             android:text="停止" />
     </LinearLayout>
 
