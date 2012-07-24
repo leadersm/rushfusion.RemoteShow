@@ -243,6 +243,9 @@ public class ScreenControlActivity extends Activity {
 	}
 
 	public String getLocalIpAddress() {
+		
+		ConnectivityManager mConnectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+		NetworkInfo mActiveNetInfo = mConnectivityManager.getActiveNetworkInfo();
 		try {
 			for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
 				NetworkInterface intf = en.nextElement();
@@ -253,10 +256,13 @@ public class ScreenControlActivity extends Activity {
 //					if (!inetAddress.isLoopbackAddress()) {
 //						return s;
 //					}
-					if(s.indexOf(":")==-1 && !(s.equals("127.0.0.1"))){
-		        		return s;
-		        	}
 					
+					if(mActiveNetInfo.getType()==ConnectivityManager.TYPE_WIFI){
+						if(s.indexOf(":")==-1 && !(s.equals("127.0.0.1"))){
+							System.out.println(inetAddress.toString()+"hostname->"+inetAddress.getHostName()+"---s->"+s);
+							return s;
+						}
+					}
 				}
 			}
 		} catch (SocketException ex) {

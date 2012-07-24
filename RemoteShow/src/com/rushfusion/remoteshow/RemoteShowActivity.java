@@ -73,7 +73,7 @@ public class RemoteShowActivity extends ListActivity {
 		for (int i = 0; i < c.getCount(); i++) {
 			HashMap<String, String> file = new HashMap<String, String>();
 			String path = c.getString(c.getColumnIndex(MediaStore.Video.Media.DATA));
-			String name = c.getString(c.getColumnIndex(MediaStore.Video.Media.TITLE));
+			String name = path.substring(path.lastIndexOf('/')+1);//c.getString(c.getColumnIndex(MediaStore.Video.Media.TITLE));
 			System.out.println("--name-->" + name + "path" + path);
 			file.put("name", name);
 			file.put("path", path);
