@@ -3,13 +3,19 @@
     android:id="@+id/LinearLayout1"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:padding="10dip"
+    android:background="@drawable/phone_main_bg"
     android:orientation="vertical" >
 
     <TextView
         android:id="@+id/mIp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="#b7ff00"
         android:text="我的Ip："
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textSize="6pt"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <LinearLayout
@@ -21,23 +27,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="搜索" />
+            android:background="@drawable/searchbtn_selector"/>
 
         <Button
             android:id="@+id/clear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="清空" />
+            android:background="@drawable/clearbtn_selector"/>
     </LinearLayout>
 
-    <View
+    <!--<View
         android:id="@+id/view1"
         android:layout_width="wrap_content"
         android:layout_height="7dip"
         android:background="#33FF33" />
-
-    <ScrollView
+    --><ScrollView
         android:id="@+id/scrollView1"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" >

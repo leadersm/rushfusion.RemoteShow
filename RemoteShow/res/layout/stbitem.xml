@@ -2,59 +2,96 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    
     android:orientation="vertical" >
-
-    <TableRow
-        android:id="@+id/tableRow1"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
+	<RelativeLayout 
+	    android:id="@+id/relativelayout_01"
+	    android:layout_width="fill_parent"
+	    android:background="@drawable/part_bg"
+	    android:layout_height="100dip">
+	    <TextView
             android:id="@+id/TextView01"
+            android:layout_marginTop="10dip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="STB_Name: "
-            android:textColor="@android:color/white"
-            android:textSize="20sp" />
-
-        <TextView
+            android:paddingLeft="10dip"
+            android:textColor="#b7ff00"
+            android:textSize="15sp" />
+	    <TextView
             android:id="@+id/stbName"
+            android:layout_marginTop="10dip"
+            android:layout_toRightOf="@+id/TextView01"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=""
-            android:textColor="#FF0000"
-            android:textSize="20sp" />
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/tableRow2"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
+            android:textColor="#ffffffff"
+            android:textSize="15sp" />
+	    <TextView
             android:id="@+id/TextView02"
+            android:layout_below="@+id/TextView01"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="STB_IP: "
-            android:textColor="@android:color/white"
-            android:textSize="20sp" />
+            android:paddingLeft="10dip"
+            android:textColor="#b7ff00"
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/stbIp"
+            android:layout_toRightOf="@+id/TextView02"
+            android:layout_below="@+id/stbName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=""
-            android:textColor="#FF0000"
-            android:textSize="20sp" />
-    </TableRow>
+            android:textColor="#ffffffff"
+            android:textSize="15sp" />
+        <Button
+            android:id="@+id/play"
+            android:layout_marginTop="20dip"
+            android:layout_marginRight="20dip"
+            android:layout_toLeftOf="@+id/pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/playbtn_selector"/>
 
-    <View
-        android:id="@+id/View01"
+        <Button
+            android:id="@+id/pause"
+            android:layout_marginTop="20dip"
+            android:layout_toLeftOf="@+id/stop"
+            android:layout_marginRight="10dip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/pausebtn_selector"/>
+
+        <Button
+            android:id="@+id/stop"
+            android:layout_marginTop="20dip"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/stopbtn_selector"/>
+        <SeekBar
+	        android:id="@+id/seekBar1"
+	        android:layout_below="@+id/TextView02"
+	        android:layout_marginTop="5dip"
+	        android:layout_width="fill_parent"
+	        android:layout_height="30dip"
+	        android:max="100" 
+	        android:progressDrawable="@drawable/seekbar_img"
+		    android:thumb="@drawable/seekbar_thumb_img"
+		    android:progress="10" />
+	</RelativeLayout>
+
+
+    <!--<View
+        android:id="@+id/View01"z
         android:layout_width="wrap_content"
         android:layout_height="3dip"
         android:background="#BB7700" />
 
-    <LinearLayout
+    --><!--<LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
@@ -77,44 +114,6 @@
             android:text="open" />
     </LinearLayout>
 
-    <SeekBar
-        android:id="@+id/seekBar1"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal" >
-
-        <Button
-            android:id="@+id/play"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/playbtn_selector"
-            android:text="播放" />
-
-        <Button
-            android:id="@+id/pause"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/playbtn_selector"
-            android:text="暂停" />
-
-        <Button
-            android:id="@+id/stop"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/playbtn_selector"
-            android:text="停止" />
-    </LinearLayout>
-
-    <View
-        android:id="@+id/view1"
-        android:layout_width="wrap_content"
-        android:layout_height="7dip"
-        android:background="#33FF33" />
+    -->
 
 </LinearLayout>
