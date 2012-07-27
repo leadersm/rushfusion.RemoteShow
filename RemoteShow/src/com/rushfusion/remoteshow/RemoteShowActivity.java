@@ -51,13 +51,13 @@ public class RemoteShowActivity extends ListActivity {
 		if(data==null)return;
 		ListView lv = getListView();
 		TextView textView = new TextView(this) ;
-		textView.setText("ÎÒµÄÊÓÆµ") ;
+		textView.setText("æˆ‘çš„è§†é¢‘") ;
 		textView.setFocusable(false);
 		textView.setPadding(5, 5, 5, 5);
 		textView.setTextSize(35);
 		textView.setTextColor(Color.rgb(183, 255, 0));
 		lv.addHeaderView(textView, null, false);
-//		lv.addHeaderView(textView) ;//·ÅÔÚsetAdapterÖ®Ç°£¬·ñÔò±¨´í
+//		lv.addHeaderView(textView) ;//æ”¾åœ¨setAdapterä¹‹å‰ï¼Œå¦åˆ™æŠ¥é”™
 		setListAdapter(adapter);
 		lv.setBackgroundResource(R.drawable.bg);
 		lv.setDivider(new ColorDrawable(Color.TRANSPARENT));
@@ -67,7 +67,7 @@ public class RemoteShowActivity extends ListActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// TODO Auto-generated method stub
-		menu.add(0, refresh, 0, "Ë¢ĞÂÁĞ±í").setIcon(R.drawable.icon_refresh);
+		menu.add(0, refresh, 0, "åˆ·æ–°åˆ—è¡¨").setIcon(R.drawable.icon_refresh);
 		return super.onCreateOptionsMenu(menu);
 	}
 	@Override
@@ -76,7 +76,7 @@ public class RemoteShowActivity extends ListActivity {
 		switch(item.getItemId()){
 		case 2:
 			refreshData();
-			Toast.makeText(this, "ÁĞ±íË¢ĞÂ³É¹¦£¡", 10);
+			Toast.makeText(this, "åˆ—è¡¨åˆ·æ–°æˆåŠŸï¼", 10);
 			break;
 			default:
 				break;
@@ -203,9 +203,9 @@ public class RemoteShowActivity extends ListActivity {
 		// TODO Auto-generated method stub
 		if(id == DIALOG_EXIT){
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle("ÌáÊ¾");
-			builder.setMessage("È·¶¨ÒªÍË³öÂğ£¿");
-			builder.setPositiveButton("È·¶¨", new DialogInterface.OnClickListener() {
+			builder.setTitle("æç¤º");
+			builder.setMessage("ç¡®å®šè¦é€€å‡ºå—ï¼Ÿ");
+			builder.setPositiveButton("ç¡®å®š", new DialogInterface.OnClickListener() {
 				
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
@@ -213,7 +213,7 @@ public class RemoteShowActivity extends ListActivity {
 					//finish();
 				}
 			});
-			builder.setNegativeButton("È¡Ïû", new DialogInterface.OnClickListener() {
+			builder.setNegativeButton("å–æ¶ˆ", new DialogInterface.OnClickListener() {
 				
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
