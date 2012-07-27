@@ -20,12 +20,16 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class RemoteShowActivity extends ListActivity {
 
@@ -33,13 +37,16 @@ public class RemoteShowActivity extends ListActivity {
 	private Cursor c;
 	private List<HashMap<String, String>> data;
 	private static final int DIALOG_EXIT = 0;
-
+	private static final int refresh = 2;
+	private static final int MENU = 1;
+	private MyAdapter adapter;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		initHttp();
+		adapter = new MyAdapter();
 		data = obtainVideos();
 		if(data==null)return;
 		ListView lv = getListView();
@@ -51,10 +58,30 @@ public class RemoteShowActivity extends ListActivity {
 		textView.setTextColor(Color.rgb(183, 255, 0));
 		lv.addHeaderView(textView, null, false);
 //		lv.addHeaderView(textView) ;//放在setAdapter之前，否则报错
-		setListAdapter(new MyAdapter());
+		setListAdapter(adapter);
 		lv.setBackgroundResource(R.drawable.bg);
 		lv.setDivider(new ColorDrawable(Color.TRANSPARENT));
 //		lv.setDividerHeight(2);
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// TODO Auto-generated method stub
+		menu.add(0, refresh, 0, "刷新列表").setIcon(R.drawable.icon_refresh);
+		return super.onCreateOptionsMenu(menu);
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		switch(item.getItemId()){
+		case 2:
+			refreshData();
+			Toast.makeText(this, "列表刷新成功！", 10);
+			break;
+			default:
+				break;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	private void initHttp() {
@@ -165,6 +192,12 @@ public class RemoteShowActivity extends ListActivity {
 		return super.onKeyDown(keyCode, event);
 	}
 	
+	private void refreshData() {
+		// TODO Auto-generated method stub
+		data = obtainVideos();
+		adapter.notifyDataSetChanged();
+	}
+
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		// TODO Auto-generated method stub
@@ -188,7 +221,7 @@ public class RemoteShowActivity extends ListActivity {
 				}
 			});
 			return builder.create();
-		}
+		}                                                                                                                                           
 		return null;
 	}
 
