@@ -58,7 +58,7 @@ public class ScreenControlActivity extends Activity {
 	private LayoutInflater inflater;
 	private String localIp = "";
 
-	private static List<STB> stbs;
+	private List<STB> stbs;
 	private LinearLayout stblist;
 	private Handler handler;
 	private DatagramSocket s = null;
