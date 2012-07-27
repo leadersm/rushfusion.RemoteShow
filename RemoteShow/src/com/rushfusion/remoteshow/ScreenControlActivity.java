@@ -149,8 +149,7 @@ public class ScreenControlActivity extends Activity {
 		clearBtn = (Button) findViewById(R.id.clear);
 		stblist = (LinearLayout) findViewById(R.id.list);
 		localIp = getLocalIpAddress();
-		mIpTV.setText("本机ip-->" + localIp+"  名称："+fileName+"  路径:"+path);
-		
+		mIpTV.setText("  本机ip-->" + localIp+"  名称："+fileName+"  路径:"+path);
 		SharedPreferences sp = getSharedPreferences("RemoteShow", Context.MODE_WORLD_WRITEABLE);
 		final SharedPreferences.Editor editor = sp.edit();
 		Map<String,String> data = (Map<String, String>) sp.getAll();
